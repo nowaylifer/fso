@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
-import { Filter, PersonForm, PersonTable } from './components';
+import { Filter, PersonForm, PersonTable, Notification } from './components';
 import personsService from './services/persons';
 
 const App = () => {
   const [inputValues, setInputValue] = useState({ name: '', number: '' });
   const [query, setQuery] = useState('');
   const [persons, setPersons] = useState(null);
+  const [notificationOptions, setNotificationOptions] = useState({ message: '' });
+  const [isNotificationShown, setIsNotificationShow] = useState(false);
 
   useEffect(() => {
     personsService.get().then((persons) => setPersons(persons));
@@ -20,9 +22,13 @@ const App = () => {
 
     if (!existingPerson) {
       setInputValue({ name: '', number: '' });
-      personsService
-        .create({ name, number })
-        .then((newPerson) => setPersons([...persons, newPerson]));
+      personsService.create({ name, number }).then((newPerson) => {
+        setPersons([...persons, newPerson]);
+        setNotificationOptions({
+          message: `Added ${newPerson.name}`,
+        });
+        setIsNotificationShow(true);
+      });
 
       return;
     }
@@ -35,11 +41,7 @@ const App = () => {
       personsService
         .update(existingPerson.id, { name, number })
         .then((updatedPerson) =>
-          setPersons(
-            persons.map((p) =>
-              p.id === existingPerson.id ? updatedPerson : p,
-            ),
-          ),
+          setPersons(persons.map((p) => (p.id === existingPerson.id ? updatedPerson : p))),
         );
     }
   };
@@ -48,9 +50,14 @@ const App = () => {
     const shouldDelete = window.confirm(`Delete ${person.name}?`);
 
     if (shouldDelete) {
-      personsService
-        .remove(person.id)
-        .then(() => setPersons(persons.filter((p) => p.id !== person.id)));
+      personsService.remove(person.id).then(() => {
+        setPersons(persons.filter((p) => p.id !== person.id));
+        setIsNotificationShow(true);
+        setNotificationOptions({
+          message: `Deleted ${person.name}`,
+          variant: 'error',
+        });
+      });
     }
   };
 
@@ -61,13 +68,14 @@ const App = () => {
   };
 
   const personsToShow = query
-    ? persons.filter((p) =>
-        p.name.toLocaleLowerCase().includes(query.toLocaleLowerCase()),
-      )
+    ? persons.filter((p) => p.name.toLocaleLowerCase().includes(query.toLocaleLowerCase()))
     : persons;
 
   return (
     <div>
+      {isNotificationShown && (
+        <Notification setIsShown={setIsNotificationShow} {...notificationOptions} />
+      )}
       <h2>Phonebook</h2>
       <Filter onChange={({ target }) => setQuery(target.value)} />
       <PersonForm
@@ -76,12 +84,7 @@ const App = () => {
         getInputHandler={getInputHandler}
       />
       <h2>Numbers</h2>
-      {!!personsToShow && (
-        <PersonTable
-          persons={personsToShow}
-          onDeleteClick={handleDeleteClick}
-        />
-      )}
+      {!!personsToShow && <PersonTable persons={personsToShow} onDeleteClick={handleDeleteClick} />}
     </div>
   );
 };
