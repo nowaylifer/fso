@@ -9,7 +9,10 @@ export const PersonForm = ({ onSubmit, inputValues, getInputHandler }) => (
     <div>
       <label>
         number:
-        <input value={inputValues.phone} onChange={getInputHandler('number')} />
+        <input
+          value={inputValues.number}
+          onChange={getInputHandler('number')}
+        />
       </label>
     </div>
     <button type="submit">add</button>

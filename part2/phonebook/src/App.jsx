@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 import { Filter, PersonForm, PersonTable } from './components';
+import personsService from './services/persons';
 
 const App = () => {
   const [inputValues, setInputValue] = useState({ name: '', number: '' });
@@ -8,9 +8,7 @@ const App = () => {
   const [persons, setPersons] = useState(null);
 
   useEffect(() => {
-    axios
-      .get('http://localhost:3001/persons')
-      .then(({ data }) => setPersons(data));
+    personsService.get().then((persons) => setPersons(persons));
   }, []);
 
   const handleFormSubmit = (e) => {
@@ -18,10 +16,41 @@ const App = () => {
 
     const { name, number } = inputValues;
 
-    if (persons.find((p) => p.name === name)) {
-      alert(`${name} is already added to phonebook`);
-    } else {
-      setPersons([...persons, { name, number }]);
+    const existingPerson = persons.find((p) => p.name === name);
+
+    if (!existingPerson) {
+      setInputValue({ name: '', number: '' });
+      personsService
+        .create({ name, number })
+        .then((newPerson) => setPersons([...persons, newPerson]));
+
+      return;
+    }
+
+    const shouldUpdate = window.confirm(
+      `${name} is already in the phonebook, replace the old number with a new one?`,
+    );
+
+    if (shouldUpdate) {
+      personsService
+        .update(existingPerson.id, { name, number })
+        .then((updatedPerson) =>
+          setPersons(
+            persons.map((p) =>
+              p.id === existingPerson.id ? updatedPerson : p,
+            ),
+          ),
+        );
+    }
+  };
+
+  const handleDeleteClick = (person) => {
+    const shouldDelete = window.confirm(`Delete ${person.name}?`);
+
+    if (shouldDelete) {
+      personsService
+        .remove(person.id)
+        .then(() => setPersons(persons.filter((p) => p.id !== person.id)));
     }
   };
 
@@ -47,7 +76,12 @@ const App = () => {
         getInputHandler={getInputHandler}
       />
       <h2>Numbers</h2>
-      {!!personsToShow && <PersonTable persons={personsToShow} />}
+      {!!personsToShow && (
+        <PersonTable
+          persons={personsToShow}
+          onDeleteClick={handleDeleteClick}
+        />
+      )}
     </div>
   );
 };
