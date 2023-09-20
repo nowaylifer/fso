@@ -9,8 +9,10 @@ const searchCountryDebounced = asyncDebounce(countriesService.search, 300);
 const App = () => {
   const [query, setQuery] = useState('');
   const [countries, setCountries] = useState([]);
-  const [selectedCountry, setSelectedCountry] = useState(null);
+  const [selectedCountryIndex, setSelectedCountryIndex] = useState(null);
   const queryRef = useRef(query);
+
+  const selectedCountry = countries[selectedCountryIndex] ?? null;
 
   useEffect(() => {
     queryRef.current = query;
@@ -22,7 +24,7 @@ const App = () => {
 
     if (!value) {
       setCountries([]);
-      setSelectedCountry(null);
+      setSelectedCountryIndex(null);
       return;
     }
 
@@ -30,12 +32,12 @@ const App = () => {
       .then((countries) => {
         if (queryRef.current) {
           setCountries(countries);
-          setSelectedCountry(countries.length === 1 ? countries[0] : null);
+          setSelectedCountryIndex(countries.length === 1 ? 0 : null);
         }
       })
       .catch(() => {
         setCountries([]);
-        setSelectedCountry(null);
+        setSelectedCountryIndex(null);
       });
   };
 
@@ -45,7 +47,7 @@ const App = () => {
       {selectedCountry ? (
         <CountryInfo country={selectedCountry} />
       ) : (
-        <CountriesList countries={countries} onSelectCountry={(c) => setSelectedCountry(c)} />
+        <CountriesList countries={countries} onSelectCountry={setSelectedCountryIndex} />
       )}
     </div>
   );

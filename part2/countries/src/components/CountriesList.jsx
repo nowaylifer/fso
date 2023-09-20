@@ -7,9 +7,9 @@ export function CountriesList({ countries, onSelectCountry }) {
 
   return (
     <ul>
-      {countries.map((c) => (
+      {countries.map((c, i) => (
         <li key={c.name.official}>
-          {c.name.common} <button onClick={() => onSelectCountry(c)}>show</button>
+          {c.name.common} <button onClick={() => onSelectCountry(i)}>show</button>
         </li>
       ))}
     </ul>
