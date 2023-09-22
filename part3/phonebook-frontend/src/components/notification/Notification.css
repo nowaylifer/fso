@@ -1,0 +1,25 @@
+.notification {
+  font-size: 20px;
+  padding: 1em;
+  position: fixed;
+  left: 50%;
+  top: 20px;
+  translate: -50% 0;
+  --hue: 0;
+  border: 1px solid;
+  border-color: hsl(var(--hue), 50%, 40%);
+  color: hsl(var(--hue), 50%, 20%);
+  background-color: hsl(var(--hue), 50%, 90%);
+}
+
+.notification--success {
+  --hue: 120;
+}
+
+.notification--error {
+  --hue: 0;
+}
+
+.notification--info {
+  --hue: 220;
+}
