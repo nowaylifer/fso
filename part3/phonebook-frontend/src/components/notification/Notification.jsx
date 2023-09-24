@@ -3,9 +3,10 @@ import cx from 'clsx';
 import { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 
-export const Notification = ({ setIsShown, message, variant = 'success', showTime = 2000 }) => {
+export const Notification = ({ setIsShown, message, variant = 'success', showTime = 5000 }) => {
   useEffect(() => {
-    setTimeout(() => setIsShown(false), showTime);
+    const id = setTimeout(() => setIsShown(false), showTime);
+    return () => clearInterval(id);
   });
 
   return createPortal(

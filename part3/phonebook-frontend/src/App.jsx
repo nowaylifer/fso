@@ -1,16 +1,16 @@
 import { useState, useEffect } from 'react';
 import { Filter, PersonForm, PersonTable, Notification } from './components';
-import personsService from './services/persons';
+import peopleService from './services/people';
 
 const App = () => {
   const [inputValues, setInputValue] = useState({ name: '', number: '' });
   const [query, setQuery] = useState('');
-  const [persons, setPersons] = useState(null);
+  const [people, setPeople] = useState(null);
   const [notificationOptions, setNotificationOptions] = useState({ message: '' });
   const [isNotificationShown, setIsNotificationShow] = useState(false);
 
   useEffect(() => {
-    personsService.get().then((persons) => setPersons(persons));
+    peopleService.get().then((persons) => setPeople(persons));
   }, []);
 
   const handleFormSubmit = (e) => {
@@ -18,17 +18,24 @@ const App = () => {
 
     const { name, number } = inputValues;
 
-    const existingPerson = persons.find((p) => p.name === name);
+    const existingPerson = people.find((p) => p.name === name);
 
     if (!existingPerson) {
       setInputValue({ name: '', number: '' });
-      personsService.create({ name, number }).then((newPerson) => {
-        setPersons([...persons, newPerson]);
-        setNotificationOptions({
-          message: `Added ${newPerson.name}`,
+      peopleService
+        .create({ name, number })
+        .then((newPerson) => {
+          setPeople([...people, newPerson]);
+          setNotificationOptions({
+            message: `Added ${newPerson.name}`,
+            variant: 'success',
+          });
+          setIsNotificationShow(true);
+        })
+        .catch((error) => {
+          setNotificationOptions({ message: error.message, variant: 'error' });
+          setIsNotificationShow(true);
         });
-        setIsNotificationShow(true);
-      });
 
       return;
     }
@@ -38,11 +45,15 @@ const App = () => {
     );
 
     if (shouldUpdate) {
-      personsService
+      peopleService
         .update(existingPerson.id, { name, number })
         .then((updatedPerson) =>
-          setPersons(persons.map((p) => (p.id === existingPerson.id ? updatedPerson : p))),
-        );
+          setPeople(people.map((p) => (p.id === existingPerson.id ? updatedPerson : p))),
+        )
+        .catch((error) => {
+          setNotificationOptions({ message: error.message, variant: 'error' });
+          setIsNotificationShow(true);
+        });
     }
   };
 
@@ -50,12 +61,12 @@ const App = () => {
     const shouldDelete = window.confirm(`Delete ${person.name}?`);
 
     if (shouldDelete) {
-      personsService.remove(person.id).then(() => {
-        setPersons(persons.filter((p) => p.id !== person.id));
+      peopleService.remove(person.id).then(() => {
+        setPeople(people.filter((p) => p.id !== person.id));
         setIsNotificationShow(true);
         setNotificationOptions({
           message: `Deleted ${person.name}`,
-          variant: 'error',
+          variant: 'success',
         });
       });
     }
@@ -68,8 +79,8 @@ const App = () => {
   };
 
   const personsToShow = query
-    ? persons.filter((p) => p.name.toLocaleLowerCase().includes(query.toLocaleLowerCase()))
-    : persons;
+    ? people.filter((p) => p.name.toLocaleLowerCase().includes(query.toLocaleLowerCase()))
+    : people;
 
   return (
     <div>

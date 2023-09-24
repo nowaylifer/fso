@@ -8,7 +8,12 @@ const get = (id) => {
 };
 
 const create = (personObj) => {
-  return axios.post(baseUrl, personObj).then(({ data }) => data);
+  return axios
+    .post(baseUrl, personObj)
+    .then(({ data }) => data)
+    .catch(({ response }) => {
+      throw new Error(response.data.error);
+    });
 };
 
 const update = (id, personObj) => {
