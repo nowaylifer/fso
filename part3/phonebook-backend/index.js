@@ -50,40 +50,26 @@ app.delete('/api/people/:id', async (request, response, next) => {
   }
 });
 
-app.post('/api/people', async (request, response) => {
+app.post('/api/people', async (request, response, next) => {
   const { body } = request;
   const { name, number } = body;
-
-  if (!name || !number) {
-    response.status(400).json({ error: 'missing name or number' });
-    return;
-  }
-
-  const existingPerson = await Person.findOne({ name });
-
-  if (existingPerson) {
-    response.status(400).json({ error: 'name must be unique' });
-    return;
-  }
 
   try {
     const person = await Person.create({ name, number });
     response.json(person);
-  } catch {
-    response.status(500).json({ error: 'cannot safe the person' });
+  } catch (error) {
+    next(error);
   }
 });
 
 app.put('/api/people/:id', async (request, response, next) => {
-  const { body } = request;
-
-  const { name, number } = body;
+  const { name, number } = request.body;
 
   try {
     const updatedPerson = await Person.findByIdAndUpdate(
       request.params.id,
       { name, number },
-      { new: true }
+      { new: true, runValidators: true, context: 'query' }
     );
 
     response.json(updatedPerson);
@@ -110,8 +96,13 @@ app.use(unknownEndpoint);
 const errorHandler = (error, request, response, next) => {
   console.error(error.message);
 
-  if (error.name === 'CastError') {
-    return response.status(400).send({ error: 'malformatted id' });
+  switch (error.name) {
+    case 'CastError': {
+      return response.status(400).send({ error: 'malformatted id' });
+    }
+    case 'ValidationError': {
+      return response.status(400).json({ error: error.message });
+    }
   }
 
   next(error);
