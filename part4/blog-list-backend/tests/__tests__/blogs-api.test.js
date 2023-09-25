@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Blog = require('../../models/blog');
 const blogModels = require('../__mocks__/blog-models');
-const { fetchBlogs, createBlog } = require('../test-helper');
+const { fetchBlogs, createBlog, testApp } = require('../test-helper');
 
 beforeEach(async () => {
   await Blog.deleteMany({});
@@ -59,6 +59,28 @@ describe('addition of a new blog', () => {
     const newBlog = blogModels[0];
     delete newBlog.url;
     await createBlog(newBlog).expect(400);
+  });
+});
+
+describe('deleting a blog', () => {
+  test('succeeds with valid id', async () => {
+    const { body } = await fetchBlogs();
+    const { id } = body[0];
+    await testApp.delete(`/api/blogs/${id}`).expect(204);
+  });
+});
+
+describe('updating a blog', () => {
+  test('succeeds with valid data', async () => {
+    const { body } = await fetchBlogs();
+    const [blog] = body;
+    const likesBefore = blog.likes;
+
+    blog.likes += 1;
+
+    const { body: updatedBlog } = await testApp.put(`/api/blogs/${blog.id}`).send(blog).expect(200);
+
+    expect(updatedBlog.likes).toBe(likesBefore + 1);
   });
 });
 
