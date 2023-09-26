@@ -1,4 +1,4 @@
-const blogModels = [
+const validblogModels = [
   {
     title: 'React patterns',
     author: 'Michael Chan',
@@ -37,4 +37,13 @@ const blogModels = [
   },
 ];
 
-module.exports = blogModels;
+const blogWithMissingUrl = {
+  title: 'React patterns',
+  author: 'Michael Chan',
+  likes: 7,
+};
+
+module.exports = {
+  validblogModels,
+  blogWithMissingUrl,
+};
