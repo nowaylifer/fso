@@ -1,8 +1,6 @@
-/* eslint-disable no-debugger */
-const mongoose = require('mongoose');
 const Blog = require('../../models/blog');
 const { validblogModels, blogWithMissingUrl } = require('../__mocks__/blog-models');
-const { fetchBlogs, createBlog, testApp } = require('../test-helper');
+const { fetchBlogs, createBlog, testApp, disconnectDB } = require('../test-helper');
 
 beforeEach(async () => {
   await Blog.deleteMany({});
@@ -85,6 +83,4 @@ describe('updating a blog', () => {
   });
 });
 
-afterAll(async () => {
-  await mongoose.connection.close();
-});
+afterAll(disconnectDB);

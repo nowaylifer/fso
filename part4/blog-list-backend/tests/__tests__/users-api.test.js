@@ -3,13 +3,6 @@ const bcrypt = require('bcrypt');
 const { newValidUser } = require('../__mocks__/user-models');
 const { testApp, fetchUsers, disconnectDB } = require('../test-helper');
 
-// describe('when there is initially any user in db', () => {
-//   beforeEach(async () => {
-//     await User.deleteMany({});
-//     await User.create({ username: 'root', name: 'test', passwordHash });
-//   });
-// });
-
 describe('when there is initially one user in db', () => {
   beforeEach(async () => {
     await User.deleteMany({});
@@ -29,7 +22,8 @@ describe('when there is initially one user in db', () => {
     const { body: usersBefore } = await fetchUsers();
 
     await testApp
-      .post('/api/users', newValidUser)
+      .post('/api/users')
+      .send(newValidUser)
       .expect(201)
       .expect('Content-Type', /application\/json/);
 
@@ -41,6 +35,4 @@ describe('when there is initially one user in db', () => {
   });
 });
 
-afterAll(async () => {
-  await disconnectDB();
-});
+afterAll(disconnectDB);
