@@ -12,6 +12,10 @@
     "logs:prod": "fly logs",
     "test": "cross-env NODE_ENV=test jest --verbose --runInBand"
   },
+  "jest": {
+    "testEnvironment": "node",
+    "globalTeardown": "./tests/teardown.js"
+  },
   "author": "",
   "license": "ISC",
   "dependencies": {

@@ -1,13 +1,13 @@
 /* eslint-disable no-debugger */
 const mongoose = require('mongoose');
 const Blog = require('../../models/blog');
-const blogModels = require('../__mocks__/blog-models');
+const { validblogModels, blogWithMissingUrl } = require('../__mocks__/blog-models');
 const { fetchBlogs, createBlog, testApp } = require('../test-helper');
 
 beforeEach(async () => {
   await Blog.deleteMany({});
-  await Blog.create(blogModels);
-});
+  await Blog.create(validblogModels);
+}, 10000);
 
 test('fetched blog has an id property', async () => {
   const { body } = await fetchBlogs();
@@ -23,7 +23,7 @@ describe('when there are initially some blogs saved', () => {
 
   test('all blogs are returned', async () => {
     const { body } = await fetchBlogs();
-    expect(body).toHaveLength(blogModels.length);
+    expect(body).toHaveLength(validblogModels.length);
   });
 
   test('a specific blog is within the returned blogs', async () => {
@@ -35,21 +35,21 @@ describe('when there are initially some blogs saved', () => {
 
 describe('addition of a new blog', () => {
   test('succeeds with valid data', async () => {
-    const newBlog = blogModels[0];
+    const newBlog = validblogModels[0];
 
     await createBlog(newBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/);
 
     const { body: blogsAtEnd } = await fetchBlogs();
-    expect(blogsAtEnd).toHaveLength(blogModels.length + 1);
+    expect(blogsAtEnd).toHaveLength(validblogModels.length + 1);
 
     const titles = blogsAtEnd.map((b) => b.title);
     expect(titles).toContain('React patterns');
   });
 
   test("new blog's likes field defaults to 0 if isn't specified", async () => {
-    const newBlog = blogModels[0];
+    const newBlog = validblogModels[0];
     delete newBlog.likes;
 
     const { body } = await createBlog(newBlog);
@@ -57,9 +57,9 @@ describe('addition of a new blog', () => {
   });
 
   test('fails with status code 400 if data is invalid', async () => {
-    const newBlog = blogModels[0];
-    delete newBlog.url;
-    await createBlog(newBlog).expect(400);
+    await createBlog(blogWithMissingUrl)
+      .expect(400)
+      .expect('Content-Type', /application\/json/);
   });
 });
 
