@@ -1,3 +1,4 @@
+/* eslint-disable no-debugger */
 const mongoose = require('mongoose');
 const Blog = require('../../models/blog');
 const blogModels = require('../__mocks__/blog-models');
@@ -13,7 +14,7 @@ test('fetched blog has an id property', async () => {
   expect(body[0].id).toBeDefined();
 });
 
-describe('when there are initiialy some blogs saved', () => {
+describe('when there are initially some blogs saved', () => {
   test('blogs are returned as json', async () => {
     await fetchBlogs()
       .expect(200)
