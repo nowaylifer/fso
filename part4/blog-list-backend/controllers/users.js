@@ -5,6 +5,12 @@ const { SALT_ROUNDS } = require('../utils/config');
 
 usersRouter.post('/', async (request, response) => {
   const { username, name, password } = request.body;
+
+  if (password.length < 3) {
+    response.status(400).json({ error: 'password must be at least 3 characters long' });
+    return;
+  }
+
   const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
   const savedUser = await User.create({ username, name, passwordHash });
   response.status(201).json(savedUser);

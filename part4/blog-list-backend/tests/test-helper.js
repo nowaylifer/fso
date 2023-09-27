@@ -4,12 +4,12 @@ const app = require('../app');
 
 const testApp = supertest(app);
 
-const fetchBlogs = () => {
-  return testApp.get('/api/blogs');
+const fetchBlogs = (token) => {
+  return testApp.get('/api/blogs').set('Authorization', `Bearer ${token}`);
 };
 
-const createBlog = (blog) => {
-  return testApp.post('/api/blogs').send(blog);
+const createBlog = (blog, token) => {
+  return testApp.post('/api/blogs').send(blog).set('Authorization', `Bearer ${token}`);
 };
 
 const fetchUsers = () => {

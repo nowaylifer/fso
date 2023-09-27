@@ -1,7 +1,7 @@
 const User = require('../../models/user');
 const bcrypt = require('bcrypt');
 const { newValidUser } = require('../__mocks__/user-models');
-const { testApp, fetchUsers, disconnectDB } = require('../test-helper');
+const { fetchUsers, createUser, disconnectDB } = require('../test-helper');
 
 describe('when there is initially one user in db', () => {
   beforeEach(async () => {
@@ -21,9 +21,7 @@ describe('when there is initially one user in db', () => {
   test('creation succeeds with a fresh username', async () => {
     const { body: usersBefore } = await fetchUsers();
 
-    await testApp
-      .post('/api/users')
-      .send(newValidUser)
+    await createUser(newValidUser)
       .expect(201)
       .expect('Content-Type', /application\/json/);
 
@@ -33,6 +31,21 @@ describe('when there is initially one user in db', () => {
     expect(usersAfter).toHaveLength(usersBefore.length + 1);
     expect(usernames).toContain(newValidUser.username);
   });
+
+  test('creation fails with non-unique username', async () => {
+    const { body: usersBefore } = await fetchUsers();
+    const invalidUser = { username: 'root', password: 'password' };
+
+    await createUser(invalidUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/);
+
+    const { body: usersAfter } = await fetchUsers();
+    expect(usersAfter).toHaveLength(usersBefore.length);
+  });
 });
 
-afterAll(disconnectDB);
+afterAll(async () => {
+  await User.deleteMany({});
+  await disconnectDB();
+});
