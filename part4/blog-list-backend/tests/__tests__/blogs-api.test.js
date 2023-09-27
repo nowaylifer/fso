@@ -103,3 +103,16 @@ describe('updating a blog', () => {
     expect(updatedBlog.likes).toBe(likesBefore + 1);
   });
 });
+
+describe('when token is invalid', () => {
+  test('deletion of a blog fails', async () => {
+    const newBlog = validblogModels[0];
+    const response = await createBlog(newBlog, token);
+
+    await testApp
+      .delete(`/api/blogs/${response.body.id}`)
+      .set('Authorization', `Bearer invalidtoken`)
+      .expect(401)
+      .expect('Content-Type', /application\/json/);
+  });
+});
