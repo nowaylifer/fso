@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import Blog from './components/Blog';
 import blogService from './services/blogs';
-import { UserProvider, useUser } from './context/UserContext';
+import { UserProvider, useUserContext } from './context/UserContext';
+import LoginForm from './components/LoginForm';
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
+  const [user] = useUserContext();
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs));
@@ -12,6 +14,12 @@ const App = () => {
 
   return (
     <UserProvider>
+      {!user && (
+        <div>
+          <h2>Log in to application</h2>
+          <LoginForm />
+        </div>
+      )}
       <h2>blogs</h2>
       {blogs.map((blog) => (
         <Blog key={blog.id} blog={blog} />

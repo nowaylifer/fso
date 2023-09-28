@@ -7,6 +7,6 @@ const UserProvider = (props) => {
   return <UserContext.Provider value={value} {...props} />;
 };
 
-const useUser = () => React.useContext(UserContext);
+const useUserContext = () => React.useContext(UserContext);
 
-export { UserProvider, useUser };
+export { UserProvider, useUserContext };

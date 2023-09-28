@@ -5,7 +5,10 @@ const login = (username, password) => {
   axios
     .post(API_URL + '/login', { username, password })
     .then(({ data }) => data)
-    .catch((response) => console.log(response));
+    .catch((response) => {
+      console.log(response);
+      throw response.data;
+    });
 };
 
-export { login };
+export default { login };

@@ -1,15 +1,20 @@
-import { useUser } from '../context/UserContext';
+import { useUserContext } from '../context/UserContext';
 import authService from '../services/auth';
+import { Notification } from './notification/Notification';
 
 const LoginForm = () => {
-  const [, setUser] = useUser();
+  const [, setUser] = useUserContext();
   const [inputValue, setInputValue] = React.useState({ username: '', password: '' });
+  const notifyRef = React.useRef();
 
   const handleSubmit = async () => {
     try {
       const user = await authService.login(inputValue);
       setUser(user);
-    } catch (error) {}
+      notifyRef.current.success('Successful login');
+    } catch (error) {
+      notifyRef.current.error(error.message);
+    }
   };
 
   const handleChange = (e) => {
@@ -27,6 +32,7 @@ const LoginForm = () => {
         <input name="password" value={inputValue.password} onChange={handleChange} />
       </label>
       <button type="submit">login</button>
+      <Notification ref={notifyRef} />
     </form>
   );
 };

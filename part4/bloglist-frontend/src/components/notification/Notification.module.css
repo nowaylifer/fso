@@ -12,14 +12,14 @@
   background-color: hsl(var(--hue), 50%, 90%);
 }
 
-.notification--success {
+.notification.success {
   --hue: 120;
 }
 
-.notification--error {
+.notification.error {
   --hue: 0;
 }
 
-.notification--info {
+.notification.info {
   --hue: 220;
 }
