@@ -1,12 +1,13 @@
 const Blog = require('../../models/blog');
-const User = require('../../models/user');
 const { newValidUser } = require('../__mocks__/user-models');
 const { validblogModels, blogWithMissingUrl } = require('../__mocks__/blog-models');
-const { createUser, fetchBlogs, createBlog, testApp, disconnectDB } = require('../test-helper');
+const { createUser, fetchBlogs, createBlog, testApp } = require('../test-helper');
+const testDB = require('../mongoTestConfig');
 
 let token;
 
 beforeAll(async () => {
+  await testDB.connect();
   await createUser(newValidUser);
   const { username, password } = newValidUser;
   const response = await testApp.post('/api/login').send({ username, password });
@@ -14,9 +15,7 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  token = null;
-  await User.deleteMany({});
-  await disconnectDB();
+  await testDB.disconnect();
 });
 
 beforeEach(async () => {

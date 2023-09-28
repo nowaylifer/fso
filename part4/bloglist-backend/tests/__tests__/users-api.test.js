@@ -1,7 +1,16 @@
 const User = require('../../models/user');
 const bcrypt = require('bcrypt');
 const { newValidUser } = require('../__mocks__/user-models');
-const { fetchUsers, createUser, disconnectDB } = require('../test-helper');
+const { fetchUsers, createUser } = require('../test-helper');
+const testDB = require('../mongoTestConfig');
+
+beforeAll(async () => {
+  await testDB.connect();
+});
+
+afterAll(async () => {
+  await testDB.disconnect();
+});
 
 describe('when there is initially one user in db', () => {
   beforeEach(async () => {
@@ -43,9 +52,4 @@ describe('when there is initially one user in db', () => {
     const { body: usersAfter } = await fetchUsers();
     expect(usersAfter).toHaveLength(usersBefore.length);
   });
-});
-
-afterAll(async () => {
-  await User.deleteMany({});
-  await disconnectDB();
 });
