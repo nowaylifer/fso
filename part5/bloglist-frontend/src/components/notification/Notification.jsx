@@ -1,6 +1,6 @@
-import styles from './Notification.module.css';
-import clsx from 'clsx';
 import React from 'react';
+import clsx from 'clsx';
+import styles from './Notification.module.css';
 import { createPortal } from 'react-dom';
 import { notificationReducer, Action, initialState } from './notificationReducer';
 
@@ -24,7 +24,11 @@ export const Notification = React.forwardRef((_, ref) => {
   }, [state.isShown]);
 
   return createPortal(
-    isShown && <div className={clsx(styles.notification, styles[variant])}>{message}</div>,
+    state.isShown && (
+      <div className={clsx(styles.notification, styles[state.variant])}>{state.message}</div>
+    ),
     document.body
   );
 });
+
+Notification.displayName = 'Notification';

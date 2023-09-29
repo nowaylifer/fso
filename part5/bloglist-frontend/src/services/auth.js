@@ -1,13 +1,12 @@
 import axios from 'axios';
 import { API_URL } from '../constants';
 
-const login = (username, password) => {
-  axios
+const login = ({ username, password }) => {
+  return axios
     .post(API_URL + '/login', { username, password })
     .then(({ data }) => data)
-    .catch((response) => {
-      console.log(response);
-      throw response.data;
+    .catch((error) => {
+      throw new Error(error.response.data.error);
     });
 };
 
