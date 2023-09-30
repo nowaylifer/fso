@@ -38,4 +38,4 @@ export const useNotification = () => {
   };
 };
 
-export default NotificationProvider;
+export default React.memo(NotificationProvider);

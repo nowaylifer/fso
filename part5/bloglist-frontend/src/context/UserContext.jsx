@@ -1,13 +1,14 @@
 import React from 'react';
+import { useLocalStorage } from '../hooks/useLocalStorage';
 
 const UserContext = React.createContext([]);
 
 const UserProvider = (props) => {
-  const value = React.useState(null);
+  const value = useLocalStorage('user');
   return <UserContext.Provider value={value} {...props} />;
 };
 
-const useUser = () => {
+export const useUser = () => {
   const context = React.useContext(UserContext);
 
   if (!context) {
@@ -17,4 +18,4 @@ const useUser = () => {
   return context;
 };
 
-export { UserProvider, useUser };
+export default UserProvider;
