@@ -7,7 +7,7 @@ const UserProvider = (props) => {
   return <UserContext.Provider value={value} {...props} />;
 };
 
-const useUserContext = () => {
+const useUser = () => {
   const context = React.useContext(UserContext);
 
   if (!context) {
@@ -17,4 +17,4 @@ const useUserContext = () => {
   return context;
 };
 
-export { UserProvider, useUserContext };
+export { UserProvider, useUser };

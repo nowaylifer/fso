@@ -1,12 +1,12 @@
 import React from 'react';
-import { useUserContext } from '../context/UserContext';
 import authService from '../services/auth';
-import { Notification } from './notification/Notification';
+import { useNotification } from '../feauture/notify';
+import { useUser } from '../context/UserContext';
 
 const LoginForm = () => {
-  const [user, setUser] = useUserContext();
+  const notify = useNotification();
+  const [, setUser] = useUser();
   const [inputValue, setInputValue] = React.useState({ username: '', password: '' });
-  const notifyRef = React.useRef();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -15,19 +15,15 @@ const LoginForm = () => {
       const loggedInUser = await authService.login(inputValue);
       setUser(loggedInUser);
       setInputValue({ username: '', password: '' });
-      notifyRef.current.success('Successful login');
+      notify({ message: 'Successful login' });
     } catch (error) {
-      notifyRef.current.error(error.message);
+      notify({ message: error.message, type: 'error' });
     }
   };
 
   const handleChange = (e) => {
     setInputValue({ ...inputValue, [e.target.name]: e.target.value });
   };
-
-  if (user) {
-    return null;
-  }
 
   return (
     <div>
@@ -46,7 +42,6 @@ const LoginForm = () => {
           </label>
         </p>
         <button type="submit">login</button>
-        <Notification ref={notifyRef} />
       </form>
     </div>
   );

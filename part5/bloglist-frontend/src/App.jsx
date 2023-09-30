@@ -1,26 +1,26 @@
-import { useState, useEffect } from 'react';
+import React from 'react';
 import Blog from './components/Blog';
 import blogService from './services/blogs';
-import { UserProvider } from './context/UserContext';
 import LoginForm from './components/LoginForm';
 import UserPanel from './components/UserPanel';
+import { useUser } from './context';
 
 const App = () => {
-  const [blogs, setBlogs] = useState([]);
+  const [blogs, setBlogs] = React.useState([]);
+  const [user] = useUser();
 
-  useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs));
+  React.useEffect(() => {
+    blogService.getAll().then(setBlogs);
   }, []);
 
   return (
-    <UserProvider>
-      <LoginForm />
-      <UserPanel />
+    <>
+      {user ? <UserPanel /> : <LoginForm />}
       <h2>blogs</h2>
       {blogs.map((blog) => (
         <Blog key={blog.id} blog={blog} />
       ))}
-    </UserProvider>
+    </>
   );
 };
 

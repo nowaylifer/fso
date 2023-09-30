@@ -1,15 +1,18 @@
-import { useUserContext } from '../context/UserContext';
+import { useUser } from '../context/UserContext';
+import { useNotification } from '../feauture/notify';
 
 const UserPanel = () => {
-  const [user, setUser] = useUserContext();
+  const [user, setUser] = useUser();
+  const notify = useNotification();
 
-  if (!user) {
-    return null;
-  }
+  const handleLogOutClick = () => {
+    setUser(null);
+    notify({ message: 'Log out from the account' });
+  };
 
   return (
     <div>
-      logged in as {user.name} <button onClick={() => setUser(null)}>logout</button>
+      logged in as {user.name} <button onClick={handleLogOutClick}>logout</button>
     </div>
   );
 };
