@@ -3,6 +3,7 @@ import Blog from './components/Blog';
 import blogService from './services/blogs';
 import LoginForm from './components/LoginForm';
 import UserPanel from './components/UserPanel';
+import BlogForm from './components/BlogForm';
 import { useUser } from './context';
 
 const App = () => {
@@ -15,7 +16,14 @@ const App = () => {
 
   return (
     <>
-      {user ? <UserPanel /> : <LoginForm />}
+      {user ? (
+        <>
+          <UserPanel />
+          <BlogForm setBlogs={setBlogs} />
+        </>
+      ) : (
+        <LoginForm />
+      )}
       <h2>blogs</h2>
       {blogs.map((blog) => (
         <Blog key={blog.id} blog={blog} />
@@ -24,4 +32,4 @@ const App = () => {
   );
 };
 
-export default React.memo(App);
+export default App;
