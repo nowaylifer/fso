@@ -5,7 +5,9 @@ const middleware = require('../utils/middleware');
 const userMiddlewares = [middleware.tokenExtractor, middleware.userExtractor];
 
 blogsRouter.get('/', (request, response) => {
-  Blog.find({}).then((blogs) => response.json(blogs));
+  Blog.find({})
+    .populate('user')
+    .then((blogs) => response.json(blogs));
 });
 
 blogsRouter.post('/', userMiddlewares, async (request, response) => {
@@ -15,7 +17,7 @@ blogsRouter.post('/', userMiddlewares, async (request, response) => {
   user.blogs = user.blogs.concat(savedBlog._id);
   user.save();
 
-  response.status(201).json(savedBlog);
+  response.status(201).json(await savedBlog.populate('user'));
 });
 
 blogsRouter.delete('/:id', userMiddlewares, async (request, response) => {
@@ -30,14 +32,20 @@ blogsRouter.delete('/:id', userMiddlewares, async (request, response) => {
   response.status(204).end();
 });
 
-blogsRouter.put('/:id', userMiddlewares, async (request, response) => {
-  const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, request.body, {
-    new: true,
-    runValidators: true,
-    context: 'query',
-  });
+blogsRouter.put('/:id', async (request, response) => {
+  const { likes, title, author, url } = request.body;
 
-  response.json(updatedBlog);
+  const updatedBlog = await Blog.findByIdAndUpdate(
+    request.params.id,
+    { likes, title, author, url },
+    {
+      new: true,
+      runValidators: true,
+      context: 'query',
+    }
+  );
+
+  response.json(await updatedBlog.populate('user'));
 });
 
 module.exports = blogsRouter;

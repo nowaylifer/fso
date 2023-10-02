@@ -3,7 +3,7 @@ content-type: application/json
 authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImJtdzk5IiwiaWQiOiI2NTE0NzA3ZTJjZjg4MTA3MjNlYzZiOGYiLCJpYXQiOjE2OTU4MzgzNjAsImV4cCI6MTY5NTg0MTk2MH0.1NkxTRCwKaNACptrXc91nMEpew027F0Uzbv_hnncuBc
 
 {
-  "author": "Loca People",
-  "title": "Cringe",
+  "author": "Marat Bondarenko",
+  "title": "New blog",
   "url": "https://placeholder.com"
 }

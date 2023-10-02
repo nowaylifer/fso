@@ -4,7 +4,7 @@ const { JWT_SECRET } = require('./config');
 const User = require('../models/user');
 
 morgan.token('body', (request) => {
-  if (request.method === 'POST') {
+  if (['GET', 'PUT', 'PATCH'].includes(request.method)) {
     return JSON.stringify(request.body);
   }
 });

@@ -24,4 +24,25 @@ const create = (newBlog, token) => {
     });
 };
 
-export default { getAll, create };
+const update = (updatedBlog, token) => {
+  return axios
+    .put(`${baseUrl}/${updatedBlog.id}`, updatedBlog)
+    .then(({ data }) => data)
+    .catch((error) => {
+      throw new Error(error.response.data.error);
+    });
+};
+
+const remove = (id, token) => {
+  if (!token) {
+    throw new Error('In order to delete blog login first');
+  }
+  return axios
+    .delete(`${baseUrl}/${id}`, getAuthHeader(token))
+    .then(({ data }) => data)
+    .catch((error) => {
+      throw new Error(error.response.data.error);
+    });
+};
+
+export default { getAll, create, update, remove };
