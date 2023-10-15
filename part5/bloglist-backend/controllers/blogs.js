@@ -33,17 +33,15 @@ blogsRouter.delete('/:id', userMiddlewares, async (request, response) => {
 });
 
 blogsRouter.put('/:id', async (request, response) => {
-  const { likes, title, author, url } = request.body;
+  const blog = request.body;
+  delete blog.user;
+  delete blog.id;
 
-  const updatedBlog = await Blog.findByIdAndUpdate(
-    request.params.id,
-    { likes, title, author, url },
-    {
-      new: true,
-      runValidators: true,
-      context: 'query',
-    }
-  );
+  const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, blog, {
+    new: true,
+    runValidators: true,
+    context: 'query',
+  });
 
   response.json(await updatedBlog.populate('user'));
 });
