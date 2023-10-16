@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const logger = require('../utils/logger');
+const logger = require('../../utils/logger');
 const { MongoMemoryServer } = require('mongodb-memory-server');
 
 let mongod;
@@ -36,4 +36,5 @@ module.exports = {
   connect,
   disconnect,
   clearDB,
+  db,
 };

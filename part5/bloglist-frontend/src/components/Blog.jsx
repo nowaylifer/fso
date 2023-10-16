@@ -36,12 +36,12 @@ const Blog = ({ blog, setBlogs }) => {
       setBlogs((prevBlogs) => prevBlogs.filter((b) => b.id !== blog.id));
       notify({ message: `Deleted blog ${blog.title}` });
     } catch (error) {
-      notify({ message: `Error: ${error.message}` });
+      notify({ message: `Error: ${error.message}`, type: 'error' });
     }
   };
 
   return (
-    <div style={blogStyle}>
+    <div style={blogStyle} data-testid="blog">
       {blog.title} {blog.author}{' '}
       <button onClick={() => setIsVisible(!isVisible)}>{isVisible ? 'hide' : 'show'}</button>
       {isVisible && (

@@ -1,16 +1,15 @@
+/* eslint-disable no-debugger */
 const Blog = require('../../models/blog');
 const { newValidUser } = require('../__mocks__/user-models');
 const { validblogModels, blogWithMissingUrl } = require('../__mocks__/blog-models');
-const { createUser, fetchBlogs, createBlog, testApp } = require('../test-helper');
-const testDB = require('../mongoTestConfig');
+const { fetchBlogs, createBlog, testApp, loginAsNewUser } = require('../test-helper');
+const testDB = require('../../config/mongodb/mongoTestConfig');
 
 let token;
 
 beforeAll(async () => {
   await testDB.connect();
-  await createUser(newValidUser);
-  const { username, password } = newValidUser;
-  const response = await testApp.post('/api/login').send({ username, password });
+  const response = await loginAsNewUser(newValidUser);
   token = response.body.token;
 });
 
@@ -20,7 +19,10 @@ afterAll(async () => {
 
 beforeEach(async () => {
   await Blog.deleteMany({});
-  await Blog.create(validblogModels);
+  return validblogModels.reduce(
+    (promise, blog) => promise.then(() => createBlog(blog, token)),
+    Promise.resolve()
+  );
 }, 10000);
 
 describe('when there are initially some blogs saved', () => {
@@ -78,10 +80,24 @@ describe('addition of a new blog', () => {
 });
 
 describe('deleting a blog', () => {
-  test('succeeds with valid id', async () => {
-    const { body } = await fetchBlogs(token);
-    const { id } = body[0];
-    await testApp.delete(`/api/blogs/${id}`).set('Authorization', `Bearer ${token}`).expect(204);
+  it('succeeds when the user created that blog is logged in', async () => {
+    const { body } = await fetchBlogs();
+    const [blog] = body;
+    await testApp
+      .delete(`/api/blogs/${blog.id}`)
+      .set('Authorization', `Bearer ${token}`)
+      .expect(204);
+  });
+
+  it('fails when different user is logged in', async () => {
+    const response = await loginAsNewUser({ ...newValidUser, username: 'newuser' });
+    const difToken = response.body.token;
+    const { body } = await fetchBlogs();
+    const [blog] = body;
+    await testApp
+      .delete(`/api/blogs/${blog.id}`)
+      .set('Authorization', `Bearer ${difToken}`)
+      .expect(401);
   });
 });
 

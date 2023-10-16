@@ -19,10 +19,20 @@ const createUser = (user) => {
   return testApp.post('/api/users').send(user);
 };
 
+const login = ({ username, password }) => {
+  return testApp.post('/api/login').send({ username, password });
+};
+
+const loginAsNewUser = (user) => {
+  return createUser(user).then(() => login(user));
+};
+
 module.exports = {
   testApp,
   fetchBlogs,
   createBlog,
   fetchUsers,
   createUser,
+  login,
+  loginAsNewUser,
 };

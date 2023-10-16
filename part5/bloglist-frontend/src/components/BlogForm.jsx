@@ -15,11 +15,11 @@ const BlogForm = ({ setBlogs }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(inputValues);
 
     try {
       const createdBlog = await blogService.create(inputValues, user.token);
       setBlogs((prevBlogs) => [...prevBlogs, createdBlog]);
+      setInputValues({ title: '', author: '', url: '' });
       notify({ message: 'Blog created' });
     } catch (error) {
       notify({ message: `Error: ${error.message}`, type: 'error' });

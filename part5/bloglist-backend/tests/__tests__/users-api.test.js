@@ -2,7 +2,7 @@ const User = require('../../models/user');
 const bcrypt = require('bcrypt');
 const { newValidUser } = require('../__mocks__/user-models');
 const { fetchUsers, createUser } = require('../test-helper');
-const testDB = require('../mongoTestConfig');
+const testDB = require('../../config/mongodb/mongoTestConfig');
 
 beforeAll(async () => {
   await testDB.connect();
