@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 
 const Notification = () => {
   const dispatch = useDispatch();
-  const { isShown, message } = useSelector((state) => state.notification);
+  const { isShown, message, time } = useSelector((state) => state.notification);
 
   const style = {
     border: 'solid',
@@ -13,8 +13,10 @@ const Notification = () => {
   };
 
   useEffect(() => {
-    setTimeout(() => dispatch(hideNotification()), 5000);
-  }, [dispatch]);
+    if (isShown) {
+      setTimeout(() => dispatch(hideNotification()), time * 1000);
+    }
+  }, [isShown]);
 
   return isShown && <div style={style}>{message}</div>;
 };
