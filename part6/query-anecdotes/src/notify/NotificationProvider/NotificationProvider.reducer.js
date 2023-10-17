@@ -1,4 +1,4 @@
-const Action = {
+export const Action = {
   ADD: 'ADD_NOTIFICATION',
   REMOVE: 'REMOVE_NOTIFICATION',
 };
